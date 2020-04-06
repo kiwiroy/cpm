@@ -18,6 +18,17 @@ Show new dependencies
 
     git diff cpm | perl -nle 'print $1 if /^\+\$fatpacked\{"([^"]+)/'
 
+Run as per #138
+
+    cd $(git rev-parse --show-toplevel)
+    cd author
+    mv cpanfile.snapshot cpanfile.snapshot.git
+    ../cpm install --with-all
+    ../cpm install App::FatPacker::Simple
+    mv cpanfile.snapshot.git cpanfile.snapshot
+    cd -
+    perl -I$(pwd)/author/local/lib/perl5 ./author/fatpack.pl --force
+
 =cut
 
 Getopt::Long::GetOptions
@@ -88,12 +99,13 @@ my $exclude = join ",", qw(
     Test::Harness
 );
 my @extra = qw(
+    Carton
     Class::C3
     Devel::GlobalDestruction
     MRO::Compat
 );
 
-my $target = '5.8.1';
+my $target = '5.10.1';
 
 my ($git_describe, $git_url);
 if (my $version = $ENV{CPAN_RELEASE_VERSION}) {
